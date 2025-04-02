@@ -11,7 +11,7 @@
     <style>
         body {
             margin: 0;
-            pad: 0;
+            padding: 0;
         }
 
         .wrapper {
@@ -24,19 +24,46 @@
 <body class="container py-5">
     <div class="card p-4 shadow-lg wrapper">
         <h2 class="mb-4 text-center">Token PDF Generator</h2>
+
         <div class="mb-3">
             <label for="startNum" class="form-label">Starting Number:</label>
             <input type="number" id="startNum" class="form-control" value="10">
         </div>
+
         <div class="mb-3">
-            <label for="fontSIze" class="form-label" id="fontSizeValue">Font size: 120</label>
-            <input type="range" class="form-range" id="fontSIze" value="120" min="100" max="500" step="1"
+            <label for="fontSize" class="form-label" id="fontSizeValue">Font size: 120</label>
+            <input type="range" class="form-range" id="fontSize" value="120" min="100" max="500" step="1"
                 oninput="document.getElementById('fontSizeValue').innerHTML = `Font size: ${this.value}`">
         </div>
+
+        <div class="mb-3">
+            <label for="boxWidth" class="form-label" id="boxWidthValue">Box Width: 195</label>
+            <input type="range" class="form-range" id="boxWidth" value="195" min="50" max="500" step="1"
+                oninput="document.getElementById('boxWidthValue').innerHTML = `Box Width: ${this.value}`">
+        </div>
+
+        <div class="mb-3">
+            <label for="boxHeight" class="form-label" id="boxHeightValue">Box Height: 137</label>
+            <input type="range" class="form-range" id="boxHeight" value="137" min="50" max="500" step="1"
+                oninput="document.getElementById('boxHeightValue').innerHTML = `Box Height: ${this.value}`">
+        </div>
+
+        <div class="mb-3">
+            <label for="strokeWidth" class="form-label" id="strokeWidthValue">Stroke Width: 1</label>
+            <input type="range" class="form-range" id="strokeWidth" value="1" min="1" max="25" step="1"
+                oninput="document.getElementById('strokeWidthValue').innerHTML = `Stroke Width: ${this.value}`">
+        </div>
+
+        <div class="mb-3">
+            <label for="strokeColor" class="form-label">Color (Applies to Both Stroke & Font):</label>
+            <input type="color" id="strokeColor" class="form-control form-control-color" value="#000000">
+        </div>
+
         <div class="mb-3">
             <label for="pageNum" class="form-label">Number of Pages:</label>
             <input type="number" id="pageNum" class="form-control" value="1">
         </div>
+
         <button class="btn btn-primary w-100" onclick="generatePDF()">Download PDF</button>
     </div>
 
@@ -44,16 +71,14 @@
         let pdf;
         const ROWS = 6;
         const COLS = 3;
-        const BOX_WIDTH = 195;
-        const BOX_HEIGHT = 137;
-        const STROKE_WIDTH = 1;
-        // const FONT_SIZE = 120;
 
-        function initializePDF(fontSIze) {
+        function initializePDF(fontSize, strokeWidth, strokeColor) {
             const { jsPDF } = window.jspdf;
             pdf = new jsPDF('p', 'pt', 'a4');
-            pdf.setFontSize(fontSIze);
-            pdf.setLineWidth(STROKE_WIDTH);
+            pdf.setFontSize(fontSize);
+            pdf.setLineWidth(strokeWidth);
+            pdf.setDrawColor(strokeColor);
+            pdf.setTextColor(strokeColor);
             pdf.setFont("helvetica", "bold");
         }
 
@@ -74,12 +99,19 @@
             return matrix.map(row => [...row].reverse());
         }
 
-        function placeBoxesAndNumbers(matrix, rows, cols, fontSIze) {
+        function placeBoxesAndNumbers(matrix, rows, cols, fontSize, strokeWidth, strokeColor) {
+            const boxWidth = parseInt(document.getElementById("boxWidth").value, 10);
+            const boxHeight = parseInt(document.getElementById("boxHeight").value, 10);
+
             if (pdf) {
                 pdf.addPage();
             } else {
-                initializePDF(fontSIze);
+                initializePDF(fontSize, strokeWidth, strokeColor);
             }
+
+            pdf.setLineWidth(strokeWidth);
+            pdf.setDrawColor(strokeColor);
+            pdf.setTextColor(strokeColor);
 
             let pageWidth = pdf.internal.pageSize.getWidth();
             let pageHeight = pdf.internal.pageSize.getHeight();
@@ -90,13 +122,13 @@
                 for (let j = 0; j < cols; j++) {
                     const centerX = j * cellWidth + cellWidth / 2;
                     const centerY = i * cellHeight + cellHeight / 2;
-                    const x = centerX - BOX_WIDTH / 2;
-                    const y = centerY - BOX_HEIGHT / 2;
+                    const x = centerX - boxWidth / 2;
+                    const y = centerY - boxHeight / 2;
 
-                    pdf.rect(x, y, BOX_WIDTH, BOX_HEIGHT, 'S');
+                    pdf.rect(x, y, boxWidth, boxHeight, 'S');
                     const text = matrix[i][j].toString();
                     const textWidth = pdf.getTextWidth(text);
-                    pdf.text(text, centerX - textWidth / 2, centerY + fontSIze / 3);
+                    pdf.text(text, centerX - textWidth / 2, centerY + fontSize / 3);
                 }
             }
         }
@@ -104,7 +136,9 @@
         function generatePDF() {
             const startNum = parseInt(document.getElementById("startNum").value, 10);
             const pageNum = parseInt(document.getElementById("pageNum").value, 10);
-            const fontSIze = parseInt(document.getElementById("fontSIze").value, 10);
+            const fontSize = parseInt(document.getElementById("fontSize").value, 10);
+            const strokeWidth = parseInt(document.getElementById("strokeWidth").value, 10);
+            const strokeColor = document.getElementById("strokeColor").value;
 
             pdf = undefined;
             for (let p = 0; p < pageNum; p++) {
@@ -112,8 +146,8 @@
                 const matrix = generateMatrix(currentStart);
                 const swappedMatrix = swapMatrix(matrix);
 
-                placeBoxesAndNumbers(matrix, ROWS, COLS, fontSIze);
-                placeBoxesAndNumbers(swappedMatrix, ROWS, COLS, fontSIze);
+                placeBoxesAndNumbers(matrix, ROWS, COLS, fontSize, strokeWidth, strokeColor);
+                placeBoxesAndNumbers(swappedMatrix, ROWS, COLS, fontSize, strokeWidth, strokeColor);
             }
 
             pdf.save("numbered_grid.pdf");
