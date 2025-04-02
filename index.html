@@ -13,6 +13,7 @@
             margin: 0;
             pad: 0;
         }
+
         .wrapper {
             max-width: 750px;
             margin: auto;
@@ -99,7 +100,7 @@
             const startNum = parseInt(document.getElementById("startNum").value, 10);
             const pageNum = parseInt(document.getElementById("pageNum").value, 10);
 
-            // initializePDF();
+            pdf = undefined;
             for (let p = 0; p < pageNum; p++) {
                 const currentStart = startNum + p * Math.floor((ROWS * COLS) / 2);
                 const matrix = generateMatrix(currentStart);
