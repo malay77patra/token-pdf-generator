@@ -7,10 +7,21 @@
     <title>PDF Generator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            pad: 0;
+        }
+        .wrapper {
+            max-width: 750px;
+            margin: auto;
+        }
+    </style>
 </head>
 
 <body class="container py-5">
-    <div class="card p-4 shadow-lg">
+    <div class="card p-4 shadow-lg wrapper">
         <h2 class="mb-4 text-center">Token PDF Generator</h2>
         <div class="mb-3">
             <label for="startNum" class="form-label">Starting Number:</label>
