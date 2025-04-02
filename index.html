@@ -30,8 +30,8 @@
         </div>
         <div class="mb-3">
             <label for="fontSIze" class="form-label" id="fontSizeValue">Font size: 120</label>
-            <input type="range" id="fontSIze" class="form-control" value="120" min="100" max="500" step="1"
-                onchange="document.getElementById('fontSizeValue').innerHTML = `Font size: ${this.value}`">
+            <input type="range" class="form-range" id="fontSIze" value="120" min="100" max="500" step="1"
+                oninput="document.getElementById('fontSizeValue').innerHTML = `Font size: ${this.value}`">
         </div>
         <div class="mb-3">
             <label for="pageNum" class="form-label">Number of Pages:</label>
