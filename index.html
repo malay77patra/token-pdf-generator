@@ -29,6 +29,11 @@
             <input type="number" id="startNum" class="form-control" value="10">
         </div>
         <div class="mb-3">
+            <label for="fontSIze" class="form-label" id="fontSizeValue">Font size: 120</label>
+            <input type="range" id="fontSIze" class="form-control" value="120" min="100" max="500" step="1"
+                onchange="document.getElementById('fontSizeValue').innerHTML = `Font size: ${this.value}`">
+        </div>
+        <div class="mb-3">
             <label for="pageNum" class="form-label">Number of Pages:</label>
             <input type="number" id="pageNum" class="form-control" value="1">
         </div>
@@ -42,12 +47,12 @@
         const BOX_WIDTH = 195;
         const BOX_HEIGHT = 137;
         const STROKE_WIDTH = 1;
-        const FONT_SIZE = 120;
+        // const FONT_SIZE = 120;
 
-        function initializePDF() {
+        function initializePDF(fontSIze) {
             const { jsPDF } = window.jspdf;
             pdf = new jsPDF('p', 'pt', 'a4');
-            pdf.setFontSize(FONT_SIZE);
+            pdf.setFontSize(fontSIze);
             pdf.setLineWidth(STROKE_WIDTH);
             pdf.setFont("helvetica", "bold");
         }
@@ -69,11 +74,11 @@
             return matrix.map(row => [...row].reverse());
         }
 
-        function placeBoxesAndNumbers(matrix, rows, cols) {
+        function placeBoxesAndNumbers(matrix, rows, cols, fontSIze) {
             if (pdf) {
                 pdf.addPage();
             } else {
-                initializePDF();
+                initializePDF(fontSIze);
             }
 
             let pageWidth = pdf.internal.pageSize.getWidth();
@@ -91,7 +96,7 @@
                     pdf.rect(x, y, BOX_WIDTH, BOX_HEIGHT, 'S');
                     const text = matrix[i][j].toString();
                     const textWidth = pdf.getTextWidth(text);
-                    pdf.text(text, centerX - textWidth / 2, centerY + FONT_SIZE / 3);
+                    pdf.text(text, centerX - textWidth / 2, centerY + fontSIze / 3);
                 }
             }
         }
@@ -99,6 +104,7 @@
         function generatePDF() {
             const startNum = parseInt(document.getElementById("startNum").value, 10);
             const pageNum = parseInt(document.getElementById("pageNum").value, 10);
+            const fontSIze = parseInt(document.getElementById("fontSIze").value, 10);
 
             pdf = undefined;
             for (let p = 0; p < pageNum; p++) {
@@ -106,8 +112,8 @@
                 const matrix = generateMatrix(currentStart);
                 const swappedMatrix = swapMatrix(matrix);
 
-                placeBoxesAndNumbers(matrix, ROWS, COLS);
-                placeBoxesAndNumbers(swappedMatrix, ROWS, COLS);
+                placeBoxesAndNumbers(matrix, ROWS, COLS, fontSIze);
+                placeBoxesAndNumbers(swappedMatrix, ROWS, COLS, fontSIze);
             }
 
             pdf.save("numbered_grid.pdf");
