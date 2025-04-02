@@ -53,6 +53,12 @@
             <input type="range" class="form-range" id="strokeWidth" value="1" min="1" max="25" step="1"
                 oninput="document.getElementById('strokeWidthValue').innerHTML = `Stroke Width: ${this.value}`">
         </div>
+        <div class="mb-3">
+            <label>Print Normal:</label>
+            <input type="checkbox" id="ck-normal" />
+            <label>Print Swapped:</label>
+            <input type="checkbox" id="ck-swapped" />
+        </div>
 
         <div class="mb-3">
             <label for="strokeColor" class="form-label">Color (Applies to Both Stroke & Font):</label>
@@ -139,6 +145,8 @@
             const fontSize = parseInt(document.getElementById("fontSize").value, 10);
             const strokeWidth = parseInt(document.getElementById("strokeWidth").value, 10);
             const strokeColor = document.getElementById("strokeColor").value;
+            const ckNormal = document.getElementById("ck-normal").checked;
+            const ckSwapped = document.getElementById("ck-swapped").checked;
 
             pdf = undefined;
             for (let p = 0; p < pageNum; p++) {
@@ -146,8 +154,12 @@
                 const matrix = generateMatrix(currentStart);
                 const swappedMatrix = swapMatrix(matrix);
 
+                if(ckNormal){
                 placeBoxesAndNumbers(matrix, ROWS, COLS, fontSize, strokeWidth, strokeColor);
+                }
+                if(ckSwapped){
                 placeBoxesAndNumbers(swappedMatrix, ROWS, COLS, fontSize, strokeWidth, strokeColor);
+                }
             }
 
             pdf.save("numbered_grid.pdf");
